@@ -1,0 +1,415 @@
+
+
+import React, { useState } from 'react';
+import Navigation from './components/Navigation';
+import Dashboard from './pages/Dashboard';
+import Planner from './pages/Planner';
+import Settings from './pages/Settings';
+import WalletModal from './components/WalletModal';
+import './App.css';
+
+function App() {
+  const [activePage, setActivePage] = useState('planner');
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const [connected, setConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState('');
+  const [subscription, setSubscription] = useState('free'); // free, basic, pro
+
+  const openWalletModal = () => setWalletModalOpen(true);
+  const closeWalletModal = () => setWalletModalOpen(false);
+
+  const connectWallet = (address) => {
+    setWalletAddress(address);
+    setConnected(true);
+    closeWalletModal();
+  };
+
+  const renderPage = () => {
+    switch (activePage) {
+      case 'dashboard':
+        return <Dashboard subscription={subscription} />;
+      case 'planner':
+        return (
+          <Planner 
+            subscription={subscription} 
+            connected={connected}
+            openWalletModal={openWalletModal}
+          />
+        );
+      case 'settings':
+        return (
+          <Settings 
+            subscription={subscription}
+            connected={connected}
+            walletAddress={walletAddress}
+            openWalletModal={openWalletModal}
+          />
+        );
+      default:
+        return <Planner />;
+    }
+  };
+
+  return (
+    <div className="App">
+      <Navigation 
+        activePage={activePage} 
+        setActivePage={setActivePage}
+        connected={connected}
+        walletAddress={walletAddress}
+        openWalletModal={openWalletModal}
+      />
+      
+      <main className="main-content">
+        {renderPage()}
+      </main>
+
+      <WalletModal 
+        isOpen={walletModalOpen} 
+        onClose={closeWalletModal}
+        onConnect={connectWallet}
+      />
+    </div>
+  );
+}
+
+export default App;
+
+2. Navigation.js
+import React from 'react';
+import './Navigation.css';
+import { SolanaLogo, DashboardIcon, PlannerIcon, SettingsIcon } from '../icons';
+
+const Navigation = ({ activePage, setActivePage, connected, walletAddress, openWalletModal }) => {
+  return (
+    <nav className="navigation">
+      <div className="navigation-logo">
+        <SolanaLogo />
+        <h1>SMM Planner AI</h1>
+      </div>
+      
+      <div className="navigation-links">
+        <button 
+          className={`nav-link ${activePage === 'dashboard' ? 'active' : ''}`}
+          onClick={() => setActivePage('dashboard')}
+        >
+          <DashboardIcon />
+          <span>Дашборд</span>
+        </button>
+        
+        <button 
+          className={`nav-link ${activePage === 'planner' ? 'active' : ''}`}
+          onClick={() => setActivePage('planner')}
+        >
+          <PlannerIcon />
+          <span>Планировщик</span>
+        </button>
+        
+        <button 
+          className={`nav-link ${activePage === 'settings' ? 'active' : ''}`}
+          onClick={() => setActivePage('settings')}
+        >
+          <SettingsIcon />
+          <span>Настройки</span>
+        </button>
+      </div>
+      
+      <div className="navigation-wallet">
+        {connected ? (
+          <div className="wallet-info">
+            <div className="wallet-indicator connected"></div>
+            <span className="wallet-address">
+              {`${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`}
+            </span>
+          </div>
+        ) : (
+          <button className="connect-wallet-button" onClick={openWalletModal}>
+            Подключить кошелек
+          </button>
+        )}
+      </div>
+    </nav>
+  );
+};
+
+export default Navigation;
+
+3. WalletModal.js
+import React, { useState } from 'react';
+import './WalletModal.css';
+
+const WalletModal = ({ isOpen, onClose, onConnect }) => {
+  const [selectedWallet, setSelectedWallet] = useState(null);
+  
+  if (!isOpen) return null;
+  
+  const wallets = [
+    { id: 'phantom', name: 'Phantom', icon: '👻' },
+    { id: 'solflare', name: 'Solflare', icon: '🔆' },
+    { id: 'slope', name: 'Slope', icon: '⛰️' },
+  ];
+  
+  const handleConnect = () => {
+    if (!selectedWallet) return;
+    
+    // В реальном приложении здесь будет логика подключения кошелька
+    // Для демо генерируем фейковый адрес кошелька
+    const demoAddress = 'demo' + Math.random().toString(36).substring(2, 10);
+    onConnect(demoAddress);
+  };
+  
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h2>Подключите кошелек</h2>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        
+        <div className="modal-body">
+          <p>Выберите ваш кошелек Solana:</p>
+          
+          <div className="wallet-list">
+            {wallets.map(wallet => (
+              <div 
+                key={wallet.id}
+                className={`wallet-option ${selectedWallet === wallet.id ? 'selected' : ''}`}
+                onClick={() => setSelectedWallet(wallet.id)}
+              >
+                <span className="wallet-icon">{wallet.icon}</span>
+                <span className="wallet-name">{wallet.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="modal-footer">
+          <button 
+            className="connect-button"
+            disabled={!selectedWallet}
+            onClick={handleConnect}
+          >
+            Подключить
+          </button>
+          <button className="cancel-button" onClick={onClose}>
+            Отмена
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default WalletModal;
+
+4. Planner.js
+import React, { useState, useEffect } from 'react';
+import './Planner.css';
+
+const Planner = ({ subscription, connected, openWalletModal }) => {
+  const [platform, setPlatform] = useState('instagram');
+  const [topic, setTopic] = useState('');
+  const [audience, setAudience] = useState('general');
+  const [contentType, setContentType] = useState('post');
+  const [results, setResults] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const isPremiumFeature = (feature) => {
+    const premiumFeatures = {
+      'hashtag-research': ['basic', 'pro'],
+      'competitor-analysis': ['pro'],
+      'content-calendar': ['basic', 'pro'],
+      'ai-caption': ['basic', 'pro'],
+    };
+    
+    return !premiumFeatures[feature] || premiumFeatures[feature].includes(subscription);
+  };
+
+  const generateRecommendations = async () => {
+    if (!connected && subscription === 'free') {
+      // Покажем результаты даже для бесплатного аккаунта для демо
+      setLoading(true);
+      
+      // Имитация запроса к API
+      setTimeout(() => {
+        setResults({
+          bestTime: '18:00 - 20:00',
+          contentIdeas: [
+            'Обзор новых функций платформы',
+            'Закулисный взгляд на процесс работы',
+            'Опрос подписчиков по актуальной теме'
+          ],
+          trending: ['#solana', '#web3', '#smm'],
+          caption: subscription !== 'free' ? 'Узнайте последние тренды в мире криптовалют! 🚀 #solana #web3' : null
+        });
+        setLoading(false);
+      }, 1500);
+    } else {
+      // Логика для авторизованных пользователей
+      setLoading(true);
+      setTimeout(() => {
+        setResults({
+          bestTime: '18:00 - 20:00',
+          contentIdeas: [
+            'Обзор новых функций платформы',
+            'Закулисный взгляд на процесс работы',
+            'Опрос подписчиков по актуальной теме',
+            'Интервью с экспертом в вашей области',
+            'Истории успеха клиентов'
+          ],
+          trending: ['#solana', '#web3', '#smm', '#crypto', '#blockchain', '#defi'],
+          caption: 'Узнайте последние тренды в мире криптовалют! 🚀 Наши эксперты подготовили обзор самых интересных проектов на Solana. Комментируйте, какие проекты вы считаете самыми перспективными! #solana #web3 #crypto #blockchain',
+          competitors: subscription === 'pro' ? [
+            { name: 'competitor1', engagement: '5.2%', postFrequency: '3 в день' },
+            { name: 'competitor2', engagement: '4.8%', postFrequency: '2 в день' }
+          ] : null
+        });
+        setLoading(false);
+      }, 1500);
+    }
+  };
+
+  return (
+    <div className="planner-page">
+      <h1>AI-планировщик контента</h1>
+      
+      <div className="planner-container">
+        <div className="form-section">
+          <h2>Получите персонализированные рекомендации</h2>
+          
+          <div className="form-group">
+            <label>Выберите платформу:</label>
+            <select value={platform} onChange={(e) => setPlatform(e.target.value)}>
+              <option value="instagram">Instagram</option>
+              <option value="twitter">Twitter</option>
+              <option value="facebook">Facebook</option>
+              <option value="tiktok">TikTok</option>
+              <option value="linkedin">LinkedIn</option>
+            </select>
+          </div>
+          
+          <div className="form-group">
+            <label>Тема контента:</label>
+            <input 
+              type="text" 
+              value={topic} 
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="Например: технологии, мода, еда..."
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Целевая аудитория:</label>
+            <select value={audience} onChange={(e) => setAudience(e.target.value)}>
+              <option value="general">Общая</option>
+              <option value="tech">Технические специалисты</option>
+              <option value="business">Бизнес-аудитория</option>
+              <option value="creative">Творческие профессии</option>
+            </select>
+          </div>
+          
+          <div className="form-group">
+            <label>Тип контента:</label>
+            <select value={contentType} onChange={(e) => setContentType(e.target.value)}>
+              <option value="post">Пост</option>
+              <option value="story">История</option>
+              <option value="reel">Reels/Shorts</option>
+              <option value="carousel">Карусель</option>
+            </select>
+          </div>
+          
+          <button 
+            onClick={generateRecommendations} 
+            disabled={loading || !topic}
+            className="generate-btn"
+          >
+            {loading ? 'Генерация...' : 'Получить рекомендации'}
+          </button>
+        </div>
+        
+        {results && (
+          <div className="results-section">
+            <h2>Ваши рекомендации</h2>
+            
+            <div className="result-card">
+              <h3>Лучшее время для публикации</h3>
+              <div className="time-recommendation">
+                <div className="time-icon">⏰</div>
+                <div className="time-details">
+                  <p className="time-value">{results.bestTime}</p>
+                  <p className="time-info">Основано на активности вашей аудитории</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="result-card">
+              <h3>Идеи для контента</h3>
+              <ul className="content-ideas-list">
+                {results.contentIdeas.map((idea, index) => (
+                  <li key={index} className="content-idea-item">
+                    <span className="idea-number">{index + 1}</span>
+                    <span className="idea-text">{idea}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <div className="result-card">
+              <h3>Актуальные хэштеги</h3>
+              <div className="hashtags">
+                {results.trending.map((tag, index) => (
+                  <span key={index} className="hashtag">{tag}</span>
+                ))}
+              </div>
+            </div>
+            
+            {results.caption && (
+              <div className="result-card">
+                <h3>AI-сгенерированный текст</h3>
+                <div className="caption-container">
+                  <p>{results.caption}</p>
+                  <button className="copy-button">Копировать</button>
+                </div>
+              </div>
+            )}
+            
+            {results.competitors && (
+              <div className="result-card">
+                <h3>Анализ конкурентов</h3>
+                <div className="competitors-table">
+                  <div className="competitors-header">
+                    <span>Аккаунт</span>
+                    <span>Вовлеченность</span>
+                    <span>Частота постов</span>
+                  </div>
+                  {results.competitors.map((competitor, index) => (
+                    <div key={index} className="competitors-row">
+                      <span>{competitor.name}</span>
+                      <span>{competitor.engagement}</span>
+                      <span>{competitor.postFrequency}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {subscription === 'free' && (
+              <div className="subscription-banner">
+                <div className="banner-icon">⭐</div>
+                <div className="banner-content">
+                  <h3>Откройте полный потенциал с Premium</h3>
+                  <p>Получите доступ к расширенной аналитике, конкурентному анализу и календарю публикаций</p>
+                  <button className="upgrade-button" onClick={openWalletModal}>
+                    Подключить кошелек и оформить подписку
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Planner;
