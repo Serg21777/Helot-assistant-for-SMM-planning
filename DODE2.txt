@@ -1,0 +1,604 @@
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import { Wallet, DollarSign, CreditCard, CheckCircle, AlertCircle, ChevronDown, ExternalLink, Sparkles } from 'lucide-react';
+
+const SolanaWallet = () => {
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState('');
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [subscription, setSubscription] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showPlans, setShowPlans] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState(false);
+  const [transactionStatus, setTransactionStatus] = useState(null);
+
+  // Данные о планах подписки
+  const subscriptionPlans = [
+    {
+      id: 'basic',
+      name: 'Базовый план',
+      price: 0.05,
+      features: [
+        'Планирование до 10 постов',
+        'Базовая AI-аналитика',
+        'Поддержка 2-х платформ'
+      ],
+      recommended: false
+    },
+    {
+      id: 'pro',
+      name: 'Профессиональный план',
+      price: 0.15,
+      features: [
+        'Неограниченное количество постов',
+        'Расширенная AI-аналитика',
+        'Поддержка всех платформ',
+        'Расширенные рекомендации по контенту',
+        'Приоритетная поддержка'
+      ],
+      recommended: true
+    },
+    {
+      id: 'team',
+      name: 'Командный план',
+      price: 0.3,
+      features: [
+        'Все функции Pro-плана',
+        'До 5 пользователей',
+        'Совместное редактирование',
+        'Аналитика по команде',
+        'API доступ'
+      ],
+      recommended: false
+    }
+  ];
+
+  useEffect(() => {
+    // Имитация загрузки данных о Solana кошельке и подписке
+    const initWallet = async () => {
+      setIsLoading(true);
+      try {
+        // В реальном приложении здесь будет проверка подключения к Phantom или другому кошельку
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Для демонстрации используем фиктивные данные
+        // В реальном приложении значения будут получены из кошелька пользователя
+        const connected = localStorage.getItem('walletConnected') === 'true';
+        
+        if (connected) {
+          setWalletConnected(true);
+          setWalletAddress('8xG5...zHv9'); // В реальном приложении будет настоящий адрес
+          setWalletBalance(2.75); // В реальном приложении будет настоящий баланс
+          
+          // Проверяем наличие подписки
+          const hasSub = localStorage.getItem('subscription');
+          if (hasSub) {
+            const subData = JSON.parse(hasSub);
+            setSubscription(subData);
+          }
+        }
+      } catch (error) {
+        console.error('Ошибка при инициализации кошелька:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initWallet();
+  }, []);
+
+  // Подключение кошелька
+  const connectWallet = async () => {
+    setIsLoading(true);
+    try {
+      // В реальном приложении здесь будет код для подключения к Phantom или другому кошельку
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      // Для демонстрации
+      setWalletConnected(true);
+      setWalletAddress('8xG5...zHv9');
+      setWalletBalance(2.75);
+      
+      localStorage.setItem('walletConnected', 'true');
+    } catch (error) {
+      console.error('Ошибка при подключении кошелька:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Отключение кошелька
+  const disconnectWallet = async () => {
+    setIsLoading(true);
+    try {
+      // В реальном приложении здесь будет код для отключения кошелька
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      setWalletConnected(false);
+      setWalletAddress('');
+      setWalletBalance(0);
+      
+      localStorage.removeItem('walletConnected');
+    } catch (error) {
+      console.error('Ошибка при отключении кошелька:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Оформление подписки
+  const subscribe = async (plan) => {
+    setProcessingPayment(true);
+    setTransactionStatus({ type: 'processing', message: 'Обработка платежа...' });
+    
+    try {
+      // В реальном приложении здесь будет код для создания транзакции в сети Solana
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Имитация успешной транзакции
+      const subscriptionData = {
+        id: `sub_${Date.now()}`,
+        plan: plan.id,
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // +30 дней
+        price: plan.price,
+        status: 'active'
+      };
+      
+      setSubscription(subscriptionData);
+      localStorage.setItem('subscription', JSON.stringify(subscriptionData));
+
+
+import React, { useState, useEffect } from 'react';
+import { Wallet, DollarSign, CreditCard, CheckCircle, AlertCircle, ChevronDown, ExternalLink, Sparkles } from 'lucide-react';
+
+const SolanaWallet = () => {
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState('');
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [subscription, setSubscription] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showPlans, setShowPlans] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState(false);
+  const [transactionStatus, setTransactionStatus] = useState(null);
+
+  // Данные о планах подписки
+  const subscriptionPlans = [
+    {
+      id: 'basic',
+      name: 'Базовый план',
+      price: 0.05,
+      features: [
+        'Планирование до 10 постов',
+        'Базовая AI-аналитика',
+        'Поддержка 2-х платформ'
+      ],
+      recommended: false
+    },
+    {
+      id: 'pro',
+      name: 'Профессиональный план',
+      price: 0.15,
+      features: [
+        'Неограниченное количество постов',
+        'Расширенная AI-аналитика',
+        'Поддержка всех платформ',
+        'Расширенные рекомендации по контенту',
+        'Приоритетная поддержка'
+      ],
+      recommended: true
+    },
+    {
+      id: 'team',
+      name: 'Командный план',
+      price: 0.3,
+      features: [
+        'Все функции Pro-плана',
+        'До 5 пользователей',
+        'Совместное редактирование',
+        'Аналитика по команде',
+        'API доступ'
+      ],
+      recommended: false
+    }
+  ];
+
+  useEffect(() => {
+    // Имитация загрузки данных о Solana кошельке и подписке
+    const initWallet = async () => {
+      setIsLoading(true);
+      try {
+        // В реальном приложении здесь будет проверка подключения к Phantom или другому кошельку
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Для демонстрации используем фиктивные данные
+        // В реальном приложении значения будут получены из кошелька пользователя
+        const connected = localStorage.getItem('walletConnected') === 'true';
+        
+        if (connected) {
+          setWalletConnected(true);
+          setWalletAddress('8xG5...zHv9'); // В реальном приложении будет настоящий адрес
+          setWalletBalance(2.75); // В реальном приложении будет настоящий баланс
+          
+          // Проверяем наличие подписки
+          const hasSub = localStorage.getItem('subscription');
+          if (hasSub) {
+            const subData = JSON.parse(hasSub);
+            setSubscription(subData);
+          }
+        }
+      } catch (error) {
+        console.error('Ошибка при инициализации кошелька:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initWallet();
+  }, []);
+
+  // Подключение кошелька
+  const connectWallet = async () => {
+    setIsLoading(true);
+    try {
+      // В реальном приложении здесь будет код для подключения к Phantom или другому кошельку
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      // Для демонстрации
+      setWalletConnected(true);
+      setWalletAddress('8xG5...zHv9');
+      setWalletBalance(2.75);
+      
+      localStorage.setItem('walletConnected', 'true');
+    } catch (error) {
+      console.error('Ошибка при подключении кошелька:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Отключение кошелька
+  const disconnectWallet = async () => {
+    setIsLoading(true);
+    try {
+      // В реальном приложении здесь будет код для отключения кошелька
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      setWalletConnected(false);
+      setWalletAddress('');
+      setWalletBalance(0);
+      
+      localStorage.removeItem('walletConnected');
+    } catch (error) {
+      console.error('Ошибка при отключении кошелька:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Оформление подписки
+  const subscribe = async (plan) => {
+    setProcessingPayment(true);
+    setTransactionStatus({ type: 'processing', message: 'Обработка платежа...' });
+    
+    try {
+      // В реальном приложении здесь будет код для создания транзакции в сети Solana
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Имитация успешной транзакции
+      const subscriptionData = {
+        id: `sub_${Date.now()}`,
+        plan: plan.id,
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // +30 дней
+        price: plan.price,
+        status: 'active'
+      };
+      
+      setSubscription(subscriptionData);
+      localStorage.setItem('subscription', JSON.stringify(subscriptionData));
+
+
+import React, { useState, useEffect } from 'react';
+import { Wallet, DollarSign, CreditCard, CheckCircle, AlertCircle, ChevronDown, ExternalLink, Sparkles } from 'lucide-react';
+
+const SolanaWallet = () => {
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState('');
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [subscription, setSubscription] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showPlans, setShowPlans] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState(false);
+  const [transactionStatus, setTransactionStatus] = useState(null);
+
+  // Данные о планах подписки
+  const subscriptionPlans = [
+    {
+      id: 'basic',
+      name: 'Базовый план',
+      price: 0.05,
+      features: [
+        'Планирование до 10 постов',
+        'Базовая AI-аналитика',
+        'Поддержка 2-х платформ'
+      ],
+      recommended: false
+    },
+    {
+      id: 'pro',
+      name: 'Профессиональный план',
+      price: 0.15,
+      features: [
+        'Неограниченное количество постов',
+        'Расширенная AI-аналитика',
+        'Поддержка всех платформ',
+        'Расширенные рекомендации по контенту',
+        'Приоритетная поддержка'
+      ],
+      recommended: true
+    },
+    {
+      id: 'team',
+      name: 'Командный план',
+      price: 0.3,
+      features: [
+        'Все функции Pro-плана',
+        'До 5 пользователей',
+        'Совместное редактирование',
+        'Аналитика по команде',
+        'API доступ'
+      ],
+      recommended: false
+    }
+  ];
+
+  useEffect(() => {
+    // Имитация загрузки данных о Solana кошельке и подписке
+    const initWallet = async () => {
+      setIsLoading(true);
+      try {
+        // В реальном приложении здесь будет проверка подключения к Phantom или другому кошельку
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Для демонстрации используем фиктивные данные
+        // В реальном приложении значения будут получены из кошелька пользователя
+        const connected = localStorage.getItem('walletConnected') === 'true';
+        
+        if (connected) {
+          setWalletConnected(true);
+          setWalletAddress('8xG5...zHv9'); // В реальном приложении будет настоящий адрес
+          setWalletBalance(2.75); // В реальном приложении будет настоящий баланс
+          
+          // Проверяем наличие подписки
+          const hasSub = localStorage.getItem('subscription');
+          if (hasSub) {
+            const subData = JSON.parse(hasSub);
+            setSubscription(subData);
+          }
+        }
+      } catch (error) {
+        console.error('Ошибка при инициализации кошелька:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initWallet();
+  }, []);
+
+  // Подключение кошелька
+  const connectWallet = async () => {
+    setIsLoading(true);
+    try {
+      // В реальном приложении здесь будет код для подключения к Phantom или другому кошельку
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      // Для демонстрации
+      setWalletConnected(true);
+      setWalletAddress('8xG5...zHv9');
+      setWalletBalance(2.75);
+      
+      localStorage.setItem('walletConnected', 'true');
+    } catch (error) {
+      console.error('Ошибка при подключении кошелька:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Отключение кошелька
+  const disconnectWallet = async () => {
+    setIsLoading(true);
+    try {
+      // В реальном приложении здесь будет код для отключения кошелька
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      setWalletConnected(false);
+      setWalletAddress('');
+      setWalletBalance(0);
+      
+      localStorage.removeItem('walletConnected');
+    } catch (error) {
+      console.error('Ошибка при отключении кошелька:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Оформление подписки
+  const subscribe = async (plan) => {
+    setProcessingPayment(true);
+    setTransactionStatus({ type: 'processing', message: 'Обработка платежа...' });
+    
+    try {
+      // В реальном приложении здесь будет код для создания транзакции в сети Solana
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Имитация успешной транзакции
+      const subscriptionData = {
+        id: `sub_${Date.now()}`,
+        plan: plan.id,
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // +30 дней
+        price: plan.price,
+        status: 'active'
+      };
+      
+      setSubscription(subscriptionData);
+      localStorage.setItem('subscription', JSON.stringify(subscriptionData));
+
+
+import React, { useState, useEffect } from 'react';
+import { Wallet, DollarSign, CreditCard, CheckCircle, AlertCircle, ChevronDown, ExternalLink, Sparkles } from 'lucide-react';
+
+const SolanaWallet = () => {
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState('');
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [subscription, setSubscription] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showPlans, setShowPlans] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState(false);
+  const [transactionStatus, setTransactionStatus] = useState(null);
+
+  // Данные о планах подписки
+  const subscriptionPlans = [
+    {
+      id: 'basic',
+      name: 'Базовый план',
+      price: 0.05,
+      features: [
+        'Планирование до 10 постов',
+        'Базовая AI-аналитика',
+        'Поддержка 2-х платформ'
+      ],
+      recommended: false
+    },
+    {
+      id: 'pro',
+      name: 'Профессиональный план',
+      price: 0.15,
+      features: [
+        'Неограниченное количество постов',
+        'Расширенная AI-аналитика',
+        'Поддержка всех платформ',
+        'Расширенные рекомендации по контенту',
+        'Приоритетная поддержка'
+      ],
+      recommended: true
+    },
+    {
+      id: 'team',
+      name: 'Командный план',
+      price: 0.3,
+      features: [
+        'Все функции Pro-плана',
+        'До 5 пользователей',
+        'Совместное редактирование',
+        'Аналитика по команде',
+        'API доступ'
+      ],
+      recommended: false
+    }
+  ];
+
+  useEffect(() => {
+    // Имитация загрузки данных о Solana кошельке и подписке
+    const initWallet = async () => {
+      setIsLoading(true);
+      try {
+        // В реальном приложении здесь будет проверка подключения к Phantom или другому кошельку
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Для демонстрации используем фиктивные данные
+        // В реальном приложении значения будут получены из кошелька пользователя
+        const connected = localStorage.getItem('walletConnected') === 'true';
+        
+        if (connected) {
+          setWalletConnected(true);
+          setWalletAddress('8xG5...zHv9'); // В реальном приложении будет настоящий адрес
+          setWalletBalance(2.75); // В реальном приложении будет настоящий баланс
+          
+          // Проверяем наличие подписки
+          const hasSub = localStorage.getItem('subscription');
+          if (hasSub) {
+            const subData = JSON.parse(hasSub);
+            setSubscription(subData);
+          }
+        }
+      } catch (error) {
+        console.error('Ошибка при инициализации кошелька:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initWallet();
+  }, []);
+
+  // Подключение кошелька
+  const connectWallet = async () => {
+    setIsLoading(true);
+    try {
+      // В реальном приложении здесь будет код для подключения к Phantom или другому кошельку
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      // Для демонстрации
+      setWalletConnected(true);
+      setWalletAddress('8xG5...zHv9');
+      setWalletBalance(2.75);
+      
+      localStorage.setItem('walletConnected', 'true');
+    } catch (error) {
+      console.error('Ошибка при подключении кошелька:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Отключение кошелька
+  const disconnectWallet = async () => {
+    setIsLoading(true);
+    try {
+      // В реальном приложении здесь будет код для отключения кошелька
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      setWalletConnected(false);
+      setWalletAddress('');
+      setWalletBalance(0);
+      
+      localStorage.removeItem('walletConnected');
+    } catch (error) {
+      console.error('Ошибка при отключении кошелька:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Оформление подписки
+  const subscribe = async (plan) => {
+    setProcessingPayment(true);
+    setTransactionStatus({ type: 'processing', message: 'Обработка платежа...' });
+    
+    try {
+      // В реальном приложении здесь будет код для создания транзакции в сети Solana
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Имитация успешной транзакции
+      const subscriptionData = {
+        id: `sub_${Date.now()}`,
+        plan: plan.id,
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // +30 дней
+        price: plan.price,
+        status: 'active'
+      };
+      
+      setSubscription(subscriptionData);
+      localStorage.setItem('subscription', JSON.stringify(subscriptionData));
+
+
